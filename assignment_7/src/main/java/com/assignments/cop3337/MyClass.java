@@ -13,35 +13,45 @@ public class MyClass {
     public static void main(String args[]) throws Exception{
 
       Scanner s = new Scanner(System.in);
+      Stack<Integer> operandStack = new Stack<Integer>();
       
       while(true){
-          System.out.println("Please enter a new expression: ");
-          String exp = s.nextLine();
-
-          if(exp.equals("DONE")) {
-            break;
-          }
-
-          int result = 0;
-          boolean add = true;//if false, means subtract
+        System.out.printf("\nPlease enter a new expression OR enter DONE to conclude program: ");
+        String exp = s.nextLine();
+        
+        if(exp.equals("DONE")) {
+          break;
+        }
+        
+        int result = 0;
+        int operator = 1;
 
           for(int cur = 0; cur < exp.length(); cur++){
               if(exp.charAt(cur) == '+') {
-                add = true;
+                  operator = 1;
               } else if (exp.charAt(cur) == '-') {
-                add = false;
+                  operator = -1;
+              } else if(exp.charAt(cur) == '(' ) {
+                  operandStack.add(result);
+                  operandStack.add(operator);
+                  result = 0;
+                  operator = 1;
+              } else if(exp.charAt(cur) == ')') {
+                  result *= operandStack.pop();
+                  result += operandStack.pop();
               } else if (Character.isDigit(exp.charAt(cur))) {
-                int operand = getOp(exp, cur);
-                while(cur < exp.length() && Character.isDigit(exp.charAt(cur))) {
-                  cur++;
-                }
-                cur--;
-                result = add ? result + operand : result - operand;
+                  int num = getOp(exp, cur);
+                  while(cur < exp.length() && Character.isDigit(exp.charAt(cur))) {
+                    cur++;
+                  }
+                  result += num * operator;
+                  cur--;
               } else {
+                  s.close();
                   throw new Exception("Error: bad input");
+                }
               }
-          }  
-          System.out.println("The result is " + result);
+              System.out.printf("The result is: %d\n", result);
         }
         s.close();
     }
